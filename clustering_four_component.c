@@ -14,9 +14,9 @@ to run:
 
 char sep(){
   #ifdef _WIN32
-  return '\\'; /* windows path separator */
+    return '\\'; /* windows path separator */
   #else
-  return '/'; /* posix path sep */
+    return '/'; /* posix path sep */
   #endif
 }
 
@@ -36,7 +36,6 @@ void path_cat(char * fn, char * path, const char * f){
 
 #define N_IN 4 // number of input files
 
-
 const char* D_fn[] = {"pd_f.bin",
                       "ps_f.bin",
                       "pv_f.bin",
@@ -51,11 +50,10 @@ float min_f(float a, float b, float c){
 }
 
 int rgb_to_hsv(float * src_r, float * src_g, float * src_b, float * dst_h, float * dst_s, float * dst_v){
-    // r, g, b, \in [0, 255]
-    float r = (*src_r) / 255.;
+    float r = (*src_r) / 255.; // rgb \in [0, 255]
     float g = (*src_g) / 255.;
     float b = (*src_b) / 255.; // h:0-360.0, s:0.0-1.0, v:0.0-1.0
-
+    
     float max = max_f(r, g, b);
     float min = min_f(r, g, b);
     float h, s, v;
@@ -89,9 +87,8 @@ int hsv_to_rgb(float *r, float *g, float *b, float h, float s, float v){
     printf("V: HSV out of range %f %f %f\n", h, s, v);
     return 1.;
   }
-  if(h == 360.){
-    h = 0.;
-  }
+  if(h == 360.) h = 0.;
+  
   int i;
   float f, p, q, t;
   if( s == 0 ) {
