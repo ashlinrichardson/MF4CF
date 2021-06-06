@@ -60,6 +60,14 @@ int main(int argc, char ** argv){
   path_cat(fn, path, "MF4C_Clustered.bin");
   FILE * out = fopen(fn, "wb");
 
+  path_cat(fn, path, "r.bin");
+  FILE * out_r = fopen(fn, "wb");
+  path_cat(fn, path, "g.bin");
+  FILE * out_g = fopen(fn, "wb");
+  path_cat(fn, path, "b.bin");
+  FILE * out_b = fopen(fn, "wb");
+  
+  float r, g, b;
   while(1 == fread(&P[0], sizeof(float), 1, in_f[0])){
     
     for0(i, 3)
@@ -91,12 +99,31 @@ int main(int argc, char ** argv){
     if(Pc > Pv && Pv > Pd && Pd > Ps) class = 23;
     if(Pc > Pv && Pv > Ps && Ps > Pd) class = 24;
 
-    // printf("%e %e %e %e %d\n ", Pd, Ps, Pv, Pc, (int)class);
+
 
     fwrite(&class, sizeof(float), 1, out);
 
-  }
+    r = g = b = 0;
+    if((int)(class / 6) == 0) r = 254;
+    if((int)(class / 6) == 1) b = 254;
+    if((int)(class / 6) == 2) g = 254;
+    if((int)(class / 6) == 3){
+        r = 254;
+        b = 254;
+    }
 
+    r /= ((float)(((int)class) % 6));
+    g /= ((float)(((int)class) % 6));
+    b /= ((float)(((int)class) % 6));
+
+    fwrite(&r, sizeof(float), 1, out_r);
+    fwrite(&g, sizeof(float), 1, out_g);
+    fwrite(&b, sizeof(float), 1, out_b);
+
+  }
+  fclose(out_r);
+  fclose(out_g);
+  fclose(out_b);
   fclose(out);
   return 0;
 }
