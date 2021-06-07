@@ -199,6 +199,5 @@ int main(int argc, char ** argv){
   fclose(out_b);
   fclose(out);
 
-  path_cat(
   return 0;
 }
