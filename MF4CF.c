@@ -141,20 +141,21 @@ void hwrite(char * bfn, size_t nrow, size_t ncol, size_t nband){
   fprintf(f, "interleave = bsq\n");
   fprintf(f, "byte order = 0\n");
   fprintf(f, "band names = {band 1");
-  for0(i, nband - 1) fprintf(f, ",\nband %zu", i + 2);
+  for0(i, nband - 1)
+    fprintf(f, ",\nband %zu", i + 2);
   fprintf(f, "}\n");
   fclose(f);
 }
 
-void filter(float * t, float * t_f, int nrow, int ncol, int wsi){
-  int i, j, k, di, dj, dw, x, ix, ii, jj;
+void filter(float * t, float * t_f, long int nrow, long int ncol, long int wsi){
+  long int i, j, k, di, dj, dw, x, ix, ii, jj;
   dw = (wsi - 1) / 2;
   double dat, n;
   float d;
 
   for0(i, nrow){
     for0(j, ncol){
-      n = dat = 0; /* denominator, result */
+      n = dat = 0.; /* denominator, result */
       x = i * ncol + j; /* write index */
 
       for(di = - dw; di <= dw; di++){
@@ -183,16 +184,18 @@ int main(int argc, char ** argv){
 
   if(argc < 3) err("M4FC.exe [input T3 directory] [window size]");
   char * path = argv[1]; /* T3 matrix data path */
-  int wsi = atoi(argv[2]); /* window size parameter */
+  long int wsi = atol(argv[2]); /* window size parameter */
   if(wsi %2 != 1) err("window size must be odd number");
-
-  int i, j, k, np, nrow, ncol, di, dj, ii, jj, x, ix, jx, nw;
+  long int i, j, k, np, nrow, ncol, di, dj, ii, jj, x, ix, jx, nw;
 
   char fn[STR_MAX];
   strcpy(fn, path);
   fn[strlen(path)] = sep();
   strcpy(fn + strlen(path) + 1, "config.txt"); /* path to config.txt */
-  read_config(fn, &nrow, &ncol); /* read image dimensions */
+  
+  int nr, nc;
+  read_config(fn, &nr, &nc);
+  nrow = (long int)nr; ncol = (long int)nc;
   np = nrow * ncol; /* number of px */
 
   arrays = (void *) malloc(sizeof(void *) * MAX_ARRAYS); /* array of pointers to free later */
@@ -295,7 +298,7 @@ int main(int argc, char ** argv){
     fn[strlen(path)] = sep();
     strcpy(fn + strlen(path) + 1, out_fn[i]);
     out_f[i] = open(fn, WRITE);
-    hwrite(fn, nrow, ncol, 1); /* write envi header */
+    hwrite(fn, (size_t)nrow, (size_t)ncol, 1); /* write envi header */
     nw = fwrite(out_d[i], sizeof(float), np, out_f[i]);
     if(nw != np) err("failed to write expected number of floats");
     fclose(out_f[i]);
